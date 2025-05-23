@@ -1,0 +1,21 @@
+public class ApexCalloutDemo {
+    
+    public static void getUserDetailsFromExternalSource(){
+        
+        Http httpObj = new Http();
+        
+        HttpRequest req = new HttpRequest();
+        req.setHeader('Content-Type','application/json');
+        req.setHeader('x-api-key', 'reqres-free-v1');
+        req.SetMethod('POST');
+        req.SetEndpoint('https://reqres.in/api/users');
+        req.SetBody('{"name": "Harsh","job": "Developer"}');
+        
+        HttpResponse res = new HttpResponse();
+        
+        res =httpObj.send(req);
+        
+        System.debug('responseBody:::::>>>>>> '+res.getBody());
+    }
+
+}
