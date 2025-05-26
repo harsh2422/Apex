@@ -1,13 +1,11 @@
-Write a trigger on the Account when the Account is updated check all opportunities related to the account. Update all Opportunities Stage to close lost if an opportunity created date is greater than 30 days from today and stage not equal to close won
-
 trigger AccountTrigger on Account (after update) {
     
-    Set<Id> accIds = new Set<Id>();
+ /*   Set<Id> accIds = new Set<Id>();
     for(Account acc : Trigger.new){
         
         accIds.add(acc.Id);
     }
-    date todayDate =Date.today()+30;
+    date todayDate =System.now()-30;
     System.debug('todayDate::::'+ todayDate);
     List<Opportunity> oppList = [Select Id,createdDate,StageName from Opportunity where accountId IN : accIds];
     List<Opportunity> oppListToBeUpdated = new List<Opportunity>();
@@ -18,7 +16,9 @@ trigger AccountTrigger on Account (after update) {
         }
     }
     
-    Update oppListToBeUpdated;
+    Update oppListToBeUpdated;  */
+    
+    
     
     
     
