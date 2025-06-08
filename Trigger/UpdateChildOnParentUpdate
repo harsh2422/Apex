@@ -1,0 +1,35 @@
+trigger AccountTrigger on Account (before insert,before update,after update,after Insert,before delete,after undelete) {
+    
+  /* Scenario 1 :- When ever account field is updated then all related contact's phone field should get update with parent phone field.*/
+    Map<Id,String> accIdToPhoneMap = new Map<Id,String>();
+    
+  
+      if(Trigger.isUpdate && Trigger.Isafter){
+        for(Account acc : Trigger.new){
+            System.debug('trigger.oldMap.get(acc.Id).Phone::->' + trigger.oldMap.get(acc.Id).Phone);
+            if(acc.Phone!=trigger.oldMap.get(acc.Id).Phone){
+                accIdToPhoneMap.put(acc.Id,acc.Phone);
+            }
+            
+        }
+        
+        System.debug('accIdToPhoneMap::->' + accIdToPhoneMap);
+        
+        List<Contact> conList = [Select Id,AccountId from contact where AccountId IN :accIdToPhoneMap.keySet()];
+        List<Contact> conListToBeUpdated = new List<Contact>();
+        for(Contact con :conList){
+            System.debug('accIdToPhoneMap.get(con.AccountId)::->' + accIdToPhoneMap.get(con.AccountId));
+            con.phone=accIdToPhoneMap.get(con.AccountId);
+            conListToBeUpdated.add(con);
+        }
+        
+        System.debug('conListToBeUpdated::->' + conListToBeUpdated);
+        
+        update conListToBeUpdated;
+        
+        
+    }
+    
+
+
+}
