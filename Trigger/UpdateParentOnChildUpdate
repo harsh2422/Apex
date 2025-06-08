@@ -1,0 +1,35 @@
+trigger ConTACTTrigger on Contact (before insert,after update) {
+    
+/*Scenario 1-> When Contact description is getting update the related account description should also get updated*/
+    
+    Set<Id> accIds = new Set<Id>();
+    if(Trigger.isUpdate && Trigger.isAfter){
+        for(Contact con : Trigger.new){
+            if(con.Description!=trigger.oldMap.get(con.id).description){
+                accIds.add(con.AccountId);
+            }
+        }
+        
+        System.debug('accIds:::>>>'+ accIds);
+        
+        if(!accIds.isEmpty()){
+        
+        Map<Id,Account> accMap= new Map<Id,Account>([Select id , description from account where id IN :accIds]); 
+        List<Account> accListToUpdate = new List<Account>();
+        for(Contact con : Trigger.new){
+             System.debug('accMap.get(con.AccountId'+ accMap.get(con.AccountId));
+            Account acc = accMap.get(con.AccountId);
+            acc.Description=con.Description;
+            accListToUpdate.add(acc);
+        }
+            System.debug('accListToUpdate:::>>>'+ accListToUpdate);
+        
+        update accListToUpdate;
+    }
+        
+        
+    }
+
+
+
+}
