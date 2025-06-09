@@ -1,0 +1,52 @@
+trigger AccountTrigger on Account (before insert,before update,after update,after Insert,before delete,after undelete) {
+    
+  /* Scenario 1 :- When ever account field is updated then all related contact's phone field should get update with parent phone field.*/
+   /* Map<Id,String> accIdToPhoneMap = new Map<Id,String>();
+    
+  
+      if(Trigger.isUpdate && Trigger.Isafter){
+        for(Account acc : Trigger.new){
+            System.debug('trigger.oldMap.get(acc.Id).Phone::->' + trigger.oldMap.get(acc.Id).Phone);
+            if(acc.Phone!=trigger.oldMap.get(acc.Id).Phone){
+                accIdToPhoneMap.put(acc.Id,acc.Phone);
+            }
+            
+        }
+        
+        System.debug('accIdToPhoneMap::->' + accIdToPhoneMap);
+        
+        List<Contact> conList = [Select Id,AccountId from contact where AccountId IN :accIdToPhoneMap.keySet()];
+        List<Contact> conListToBeUpdated = new List<Contact>();
+        for(Contact con :conList){
+            System.debug('accIdToPhoneMap.get(con.AccountId)::->' + accIdToPhoneMap.get(con.AccountId));
+            con.phone=accIdToPhoneMap.get(con.AccountId);
+            conListToBeUpdated.add(con);
+        }
+        
+        System.debug('conListToBeUpdated::->' + conListToBeUpdated);
+        
+        update conListToBeUpdated;
+        
+        
+    }*/
+
+/* Scenario 2 :- Trigger to prevent duplication of account if already an account exists in the database.*/ 
+    
+    Set<String> st = new Set<String>();
+    if(Trigger.IsBefore && Trigger.IsInsert){
+       for(Account acc: Trigger.new){
+           st.add(acc.Name);
+        }
+        
+        List<Account> accList = [Select id,name from account where name IN :st];
+        
+          for(Account acc: Trigger.new){
+              if(accList.size()>0){
+                  acc.addError('Account already exists with the same name. Please try with some different name');
+              }
+        }        
+    }
+    
+
+
+}
