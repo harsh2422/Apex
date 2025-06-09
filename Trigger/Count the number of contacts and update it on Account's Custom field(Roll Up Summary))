@@ -1,0 +1,92 @@
+trigger ConTACTTrigger on Contact (before insert,before update,after insert,after update,after delete,after undelete) {
+    
+/*
+Scenario 1-> When Contact description is getting update the related account description should also get updated
+==================================================================================================================
+*/
+    
+   /* Set<Id> accIds = new Set<Id>();
+    if(Trigger.isUpdate && Trigger.isAfter){
+        for(Contact con : Trigger.new){
+            if(con.Description!=trigger.oldMap.get(con.id).description){
+                accIds.add(con.AccountId);
+            }
+        }
+        
+        System.debug('accIds:::>>>'+ accIds);
+        
+        if(!accIds.isEmpty()){
+        
+        Map<Id,Account> accMap= new Map<Id,Account>([Select id , description from account where id IN :accIds]); 
+        List<Account> accListToUpdate = new List<Account>();
+        for(Contact con : Trigger.new){
+             System.debug('accMap.get(con.AccountId'+ accMap.get(con.AccountId));
+            Account acc = accMap.get(con.AccountId);
+            acc.Description=con.Description;
+            accListToUpdate.add(acc);
+        }
+            System.debug('accListToUpdate:::>>>'+ accListToUpdate);
+        
+        update accListToUpdate;
+    }
+        
+        
+    }*/
+    
+/*
+Scenario 2-> Count the number of contacts and update it on Account's Custom field
+==================================================================================================================
+*/
+     Set<Id> accIds = new set<Id>();
+    if(Trigger.IsAfter && Trigger.IsDelete){
+        for(Contact con: Trigger.old){
+        accIds.add(con.AccountId);
+       }
+    }
+    
+    if(Trigger.IsAfter && Trigger.IsUpdate){
+        for(Contact con: Trigger.new){
+            if(con.AccountId!=Trigger.oldMap.get(con.Id).AccountId){
+                if(Trigger.oldMap.get(con.Id).AccountId!=null){
+                    System.debug('Trigger.oldMap.get(con.Id).AccountId::::'+ Trigger.oldMap.get(con.Id).AccountId);
+                    accIds.add(Trigger.oldMap.get(con.Id).AccountId);
+                    system.debug('accIds:::'+ accIds);
+                    
+                }
+                if(con.AccountId!=null){
+                    accIds.add(con.AccountId);
+                    system.debug('accIds:::'+ accIds);
+                }
+                
+            }
+        
+       }
+    }
+    
+    If(Trigger.IsAfter && (Trigger.IsInsert || Trigger.IsUndelete)){
+        for(Contact con: Trigger.new){
+            accIds.add(con.AccountId);
+           }
+    }
+    
+  
+    
+     List<Account> accList =[Select id,Number_of_contacts__c,(Select id from contacts) from account where id In :accIds];
+    List<Account> accListToBeUpdated =new List<Account>();
+    for(Account acc : accList){
+        acc.Number_of_contacts__c = acc.contacts.size();
+        system.debug('acc.Number_of_contacts__c:::'+ acc.Number_of_contacts__c);
+        accListToBeUpdated.add(acc);
+        system.debug('accListToBeUpdated:::'+ accListToBeUpdated);
+    }
+    update accListToBeUpdated;
+    
+     
+    
+    
+    
+    
+
+
+
+}
